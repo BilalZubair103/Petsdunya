@@ -1,0 +1,6 @@
+{
+  "name": "Cat Food Store",
+  "description": "A premium online cat food store featuring products, search, live filters, dynamic cart, and direct WhatsApp checkout inspired by Pets Dunya Pakistan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
