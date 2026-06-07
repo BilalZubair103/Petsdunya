@@ -272,6 +272,46 @@ app.get("/api/products", (req, res) => {
   res.json(result);
 });
 
+// POST /api/products/bulk: allows batch-importing a list of up to 20 products
+app.post("/api/products/bulk", (req, res) => {
+  const { products: uploadedProducts } = req.body;
+  if (!uploadedProducts || !Array.isArray(uploadedProducts)) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Invalid payload format. Expected { products: [...] }" 
+    });
+  }
+
+  const added: any[] = [];
+  for (const item of uploadedProducts) {
+    if (!item.name || !item.category || item.price === undefined) {
+      continue;
+    }
+    
+    // Auto increment identifier
+    const nextId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+    
+    const newProduct = {
+      id: nextId,
+      name: String(item.name),
+      category: item.category === "Wet Food" || item.category === "Treats" ? item.category : "Dry Food",
+      price: Math.max(0, Number(item.price) || 100),
+      featured: !!item.featured,
+      imageUrl: item.imageUrl || "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=500&q=80"
+    };
+
+    products.push(newProduct);
+    added.push(newProduct);
+  }
+
+  console.log(`[Express API Bulk Upload] Received and parsed ${added.length} product files into index.`);
+  res.json({
+    success: true,
+    message: `Successfully uploaded ${added.length} products into current directory catalog!`,
+    products: added
+  });
+});
+
 // POST /api/contact: receives Name, Email, and message and logs them to terminal console
 app.post("/api/contact", (req, res) => {
   const { name, email, message } = req.body;

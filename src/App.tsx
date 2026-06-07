@@ -154,6 +154,8 @@ export default function App() {
             products={products}
             onAddToCart={handleAddToCart}
             cart={cart}
+            onProductsUpdated={setProducts}
+            onShowNotification={handleShowNotification}
           />
         );
       case 'about':

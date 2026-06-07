@@ -1,20 +1,26 @@
 import React, { useState, useMemo } from 'react';
 import { Product, CartItem } from '../types';
-import { Search, Star, Sparkles, Filter, RefreshCw, ShoppingCart, Ban } from 'lucide-react';
+import { Search, Star, Sparkles, Filter, RefreshCw, ShoppingCart, Ban, UploadCloud, ChevronDown, ChevronUp } from 'lucide-react';
+import { UploadCenter } from './UploadCenter';
 
 interface ProductsViewProps {
   products: Product[];
   onAddToCart: (product: Product) => void;
   cart: CartItem[];
+  onProductsUpdated: (newProducts: Product[]) => void;
+  onShowNotification: (msg: string) => void;
 }
 
 export const ProductsView: React.FC<ProductsViewProps> = ({
   products,
   onAddToCart,
   cart,
+  onProductsUpdated,
+  onShowNotification,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Dry Food' | 'Wet Food' | 'Treats'>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showUploadCenter, setShowUploadCenter] = useState(false);
 
   // PKR formatter function
   const formatPrice = (amount: number) => {
@@ -74,6 +80,35 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Dynamic Sourcing Control Banner */}
+      <div className="bg-slate-50 border border-slate-200/60 hover:border-blue-200 rounded-3xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all pr-5">
+        <div className="flex items-center gap-3 text-left">
+          <div className="w-10 h-10 rounded-xl bg-blue-50/80 border border-blue-100 flex items-center justify-center">
+            <UploadCloud className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <h4 className="font-display font-bold text-sm text-slate-800">Dynamic Inventory Upload & Sourcing Suite</h4>
+            <p className="text-[11px] text-slate-500">Need to modify or expand active products? Drag JSON lists or click to auto-load 20 fresh premium items.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowUploadCenter(!showUploadCenter)}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-transform active:scale-95 cursor-pointer shadow-xs whitespace-nowrap"
+        >
+          <span>{showUploadCenter ? "Hide Upload Center" : "Open Sourcing Tools"}</span>
+          {showUploadCenter ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {showUploadCenter && (
+        <div className="animate-slide-down">
+          <UploadCenter 
+            onUploadSuccess={onProductsUpdated} 
+            onShowNotification={onShowNotification} 
+          />
+        </div>
+      )}
 
       {/* Main Structural Grid: Filter categories leftmost, and Catalog product list rightmost */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
